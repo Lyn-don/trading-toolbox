@@ -1,7 +1,6 @@
 import sys,getopt,os
 from pandas.core import resample
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+from lightweight_charts import Chart
 import pandas as pd
 import numpy as np
 
@@ -69,7 +68,7 @@ def main (argv):
     #extract the first 5 columns which should be time,open,high,low,close
     ohlc_df = ohlc_df.iloc[:,:6]
     #rename the columns to standerdize them
-    ohlc_df = ohlc_df.rename(columns={list(ohlc_df)[0]:"Datetime",list(ohlc_df)[1]:"Open",list(ohlc_df)[2]:"High",list(ohlc_df)[3]:"Low",list(ohlc_df)[4]:"Close"})
+    ohlc_df = ohlc_df.rename(columns={list(ohlc_df)[0]:"time",list(ohlc_df)[1]:"open",list(ohlc_df)[2]:"high",list(ohlc_df)[3]:"low",list(ohlc_df)[4]:"close",list(ohlc_df)[5]:"volume"})
     #set the first column which should be time as the index
     ohlc_df = ohlc_df.set_index(list(ohlc_df)[0])
     #convert the first row to datetime objects
@@ -98,6 +97,7 @@ def main (argv):
             resample_df = ohlc.resample(timeframe).first()
             #print(resample_df)
             #graph data
+            """
             #make a subplots the graph multiple graphs on one html file
             fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
                         vertical_spacing=0.03, subplot_titles=('OHLC', 'Volume'), 
@@ -111,7 +111,11 @@ def main (argv):
             
             #show graph by opening a borwser
             fig.show()
-             
+            """ 
+            chart = Chart()
+            chart.set(resample_df)
+
+            chart.show(block=True)
             #save the graph
             if(save_dir):
                 print(os.path.exists(f"./bean/BTCUSDT_2023-05-01_2023-06-01_5 min.html"))
@@ -129,11 +133,12 @@ def main (argv):
                         res = input(f"The file \'{filename}\' in \'{save_dir}\' all ready exist do you want to over ride it?(n/y)")
 
                         if(res == "y"):
-                            fig.write_html(f'{save_dir}/{filename.split(".")[0]}.html')
+                            print("Nan")
                         elif(res == "n"):
                             print("Skipping file.")
-    
-main(sys.argv)
-exit()
+
+if __name__ == '__main__':
+    main(sys.argv)
+    exit()
 
 
